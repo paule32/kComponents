@@ -7,81 +7,10 @@
 // -------------------------------------------------------------------------
 unit EditField;
 
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
 interface
-
 uses
   SysUtils, Classes, Controls, StdCtrls, Messages, Graphics,
-  Forms, Dialogs,
-  DesignIntf, DesignEditors;
-
-type
-  TEditFieldFileNameProperty = class(TStringProperty)
-  public
-    function GetAttributes: TPropertyAttributes; override;
-    procedure Edit; override;
-  end;
-
-type
-  TEditFieldTableNameProperty = class(TStringProperty)
-  public
-    function GetAttributes: TPropertyAttributes; override;
-    procedure Edit; override;
-  end;
-
-type
-  TEditFieldFieldNameProperty = class(TStringProperty)
-  public
-    function GetAttributes: TPropertyAttributes; override;
-    procedure Edit; override;
-  end;
-
-type TSQLite3ErrorEvent = procedure (Sender: TObject; ErrorCode: Integer) of object;
-type
-  TSQLite3DataSource = class(TComponent)
-  private
-    FDataBase  : String;
-    FDataTable : String;
-    FActive    : Boolean;
-
-    FonAfterAppend : TNotifyEvent;
-    FonAfterClose  : TNotifyEvent;
-    FonAfterDelete : TNotifyEvent;
-    FonAfterOpen   : TNotifyEvent;
-    FonAfterScroll : TNotifyEvent;
-
-    FonBeforeAppend: TNotifyEvent;
-    FonBeforeClose : TNotifyEvent;
-    FonBeforeDelete: TNotifyEvent;
-    FonBeforeOpen  : TNotifyEvent;
-    FonBeforeScroll: TNotifyEvent;
-
-    FonError: TSQLite3ErrorEvent;
-  public
-  // properties:
-  published
-    property EditDataActive : Boolean read FActive    write FActive default false;
-    property EditDataBase   : String  read FDataBase  write FDataBase;
-    property EditDataTable  : String  read FDataTable write FDataTable;
-  // event handler's:
-  published
-    property OnAfterAppend : TNotifyEvent read FonAfterAppend  write FonAfterAppend;
-    property OnAfterClose  : TNotifyEvent read FonAfterClose   write FonAfterClose;
-    property OnAfterDelete : TNotifyEvent read FonAfterDelete  write FonAfterDelete;
-    property OnAfterOpen   : TNotifyEvent read FonAfterOpen    write FonAfterOpen;
-    property OnAfterScroll : TNotifyEvent read FonAfterScroll  write FonAfterScroll;
-
-    property OnBeforeAppend: TNotifyEvent read FonBeforeAppend write FonBeforeAppend;
-    property OnBeforeClose : TNotifyEvent read FonBeforeClose  write FonBeforeClose;
-    property OnBeforeDelete: TNotifyEvent read FonBeforeDelete write FonBeforeDelete;
-    property OnBeforeOpen  : TNotifyEvent read FonBeforeOpen   write FonBeforeOpen;
-    property OnBeforeScroll: TNotifyEvent read FonBeforeScroll write FonBeforeScroll;
-
-    property OnError: TSQLite3ErrorEvent read FonError write FonError;
-  end;
+  Forms, Dialogs, kDataSource;
 
 type
   TEditFieldOptionSet  = (efASCII,efNumber,efFullASCII);
@@ -94,7 +23,7 @@ type
     FOptions   : TEditFieldOptions;
     FOptionType: TEditFieldOptionType;
 
-    FDataSource: TSQLite3DataSource;
+    FDataSource: TkDataSource;
     FDataField : String;
 
     procedure CMDialogKey(var Msg: TWMKey); message CM_DIALOGKEY;
@@ -107,7 +36,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
-    property EditDataSource : TSQLite3DataSource   read FDataSource write FDataSource;
+    property EditDataSource : TkDataSource   read FDataSource write FDataSource;
     property EditDataField  : String               read FDataField  write FDataField;
 
     property EditOptions    : TEditFieldOptions    read FOptions    write FOptions;
@@ -120,62 +49,7 @@ procedure Register;
 
 implementation
 
-{$R TEditFieldDataSource.dcr}
-
-{ TEditFieldFileNameProperty }
-function TEditFieldFileNameProperty.GetAttributes: TPropertyAttributes;
-begin
-  result := [paDialog];
-end;
-procedure TEditFieldFileNameProperty.Edit;
-begin
-  with TOpenDialog.Create(Application) do
-  try
-    Title := GetName;
-    FileName := GetValue;
-    Filter := 'SQLite3 (*.db)|*.db';
-
-    Options := Options + [
-    ofShowHelp,
-    ofPathMustExist,
-    ofFileMustExist];
-
-    if Execute then SetValue(FileName);
-  finally
-    Free
-  end;
-end;
-
-{ TEditFieldTableNameProperty }
-function TEditFieldTableNameProperty.GetAttributes: TPropertyAttributes;
-begin
-  result := [paDialog];
-end;
-procedure TEditFieldTableNameProperty.Edit;
-begin
-  with TForm.Create(Application) do
-  try
-    ShowModal;
-  finally
-    Free;
-  end;
-end;
-
-{ TEditFieldFieldNameProperty }
-function TEditFieldFieldNameProperty.GetAttributes: TPropertyAttributes;
-begin
-  result := [paDialog];
-end;
-procedure TEditFieldFieldNameProperty.Edit;
-begin
-  with TForm.Create(Application) do
-  try
-    ShowModal;
-  finally
-    Free;
-  end;
-end;
-
+{ TEditField }
 constructor TEditField.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -225,22 +99,7 @@ end;
 
 procedure Register;
 begin
-  RegisterPropertyEditor(TypeInfo(string),
-  TSQLite3DataSource,'EditDataBase' ,
-  TEditFieldFileNameProperty);
-
-  RegisterPropertyEditor(TypeInfo(string),
-  TSQLite3DataSource,'EditDataTable',
-  TEditFieldTableNameProperty);
-
-  RegisterPropertyEditor(TypeInfo(string),
-  TEditField,'EditDataField' ,
-  TEditFieldFieldNameProperty);
-
-
-  RegisterComponents('KALLUP', [
-  TEditField,
-  TSQLite3DataSource]);
+  RegisterComponents('KALLUP', [TEditField]);
 end;
 
 end.

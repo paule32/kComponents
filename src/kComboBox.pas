@@ -1,19 +1,18 @@
 // -------------------------------------------------------------------------
-// File: kListBox.pas
-// Desc: ListBox Component
+// File: kComboBox.pas
+// Desc: Tools for Help authoring.
 //
 // Code: (c) 2023 by Jens Kallup - paule32
 //       all rights reserved.
 // -------------------------------------------------------------------------
-unit kListBox;
+unit kComboBox;
 
 interface
-
 uses
   SysUtils, Classes, Controls, StdCtrls, Graphics, Types;
 
 type
-  TkListBox = class(TListBox)
+  TkComboBox = class(TComboBox)
   private
     FColorEnter : TColor;
     FColorExit  : TColor;
@@ -24,102 +23,75 @@ type
     procedure setColorEnter(Value: TColor);
     procedure setColorExit (Value: TColor);
 
-    procedure ListBoxEnter (Sender: TObject);
-    procedure ListBoxExit  (Sender: TObject);
-    procedure ListBoxDraw  (Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
+    procedure ComboBoxEnter (Sender: TObject);
+    procedure ComboBoxExit  (Sender: TObject);
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+
   published
     property ColorEnter : TColor  read getColorEnter write setColorEnter;
     property ColorExit  : TColor  read getColorExit  write setColorExit;
   end;
 
 procedure Register;
-
 implementation
 
-{ TkListBox }
-constructor TkListBox.Create(AOwner: TComponent);
+{ TkComboBox }
+constructor TkComboBox.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  //Parent := TWinControl(AOwner);
+  Parent := TWinControl(AOwner);
 
   FColorEnter := clYellow;
   FColorExit  := clWhite;
 
-  onEnter     := ListBoxEnter;
-  onExit      := ListBoxExit;
-
-  OnDrawItem  := ListBoxDraw;
+  onEnter     := ComboBoxEnter;
+  onExit      := ComboBoxExit;
 end;
 
-destructor TkListBox.Destroy;
+destructor TkComboBox.Destroy;
 begin
   Items.Clear;
   inherited Destroy;
 end;
 
-procedure TkListBox.setColorEnter(Value: TColor);
+procedure TkComboBox.setColorEnter(Value: TColor);
 begin
   FColorEnter := Value;
   Repaint;
 end;
-procedure TkListBox.setColorExit (Value: TColor);
+procedure TkComboBox.setColorExit (Value: TColor);
 begin
   FColorExit := Value;
   Repaint;
 end;
 
-function TkListBox.getColorEnter: TColor;
+function TkComboBox.getColorEnter: TColor;
 begin
   result := FColorEnter;
 end;
-function TkListBox.getColorExit: TColor;
+function TkComboBox.getColorExit: TColor;
 begin
   result := FColorExit;
 end;
 
-procedure TkListBox.ListBoxEnter(Sender: TObject);
+procedure TkComboBox.ComboBoxEnter(Sender: TObject);
 begin
   Color := FColorEnter;
   Repaint;
 end;
 
-procedure TkListBox.ListBoxExit(Sender: TObject);
+procedure TkComboBox.ComboBoxExit(Sender: TObject);
 begin
   Color := FColorExit;
   RePaint;
 end;
 
-procedure TkListBox.ListBoxDraw(
-  Control: TWinControl;
-  Index  : Integer;
-  Rect   : TRect;
-  State  : TOwnerDrawState);
-var
-  tr: TRect;
-begin
-  tr.Left   := 1;
-  tr.Top    := 1;
-  tr.Right  := Width  - 1;
-  tr.Bottom := Height - 1;
-
-  if Focused then
-  begin
-    Canvas.Brush.Color := FColorEnter;
-  end else
-  begin
-    Canvas.Brush.Color := FColorExit;
-  end;
-
-  Canvas.FillRect(tr);
-end;
-
 procedure Register;
 begin
-  RegisterComponents('KALLUP', [TkListBox]);
+  RegisterComponents('KALLUP', [TkComboBox]);
 end;
 
 end.
-

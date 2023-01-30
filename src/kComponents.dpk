@@ -1,6 +1,7 @@
 package kComponents;
 
 {$R *.res}
+{$R 'kComponentsIcons.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS OFF}
 {$BOOLEVAL OFF}
@@ -23,6 +24,7 @@ package kComponents;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $4000000}
 {$DESCRIPTION 'kallup non-profit Delphi Components'}
+{$DESIGNONLY}
 {$IMPLICITBUILD OFF}
 
 requires
@@ -32,6 +34,17 @@ requires
 
 contains
   kListBox in 'kListBox.pas',
-  EditField in 'EditField.pas';
+  EditFieldDesign in 'EditFieldDesign.pas',
+  kDataSource in 'kDataSource.pas',
+  FormTableSelect in 'FormTableSelect.pas' {FormTableSelect},
+  FormSchema in 'FormSchema.pas' {FormTableSchema},
+  kComboBox in 'kComboBox.pas',
+  EditField in 'EditField.pas',
+  dummy in 'dummy.pas' {Form2},
+  kFieldItems in 'kFieldItems.pas',
+  FormTableField in 'FormTableField.pas' {TableField},
+  kDataGrid in 'kDataGrid.pas',
+  kScrollBox in 'kScrollBox.pas',
+  kScrollBar in 'kScrollBar.pas';
 
 end.

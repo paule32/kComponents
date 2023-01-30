@@ -90,18 +90,18 @@ MaxStackSize=1048576
 ImageBase=67108864
 ExeDescription=kallup non-profit Delphi Components
 [Directories]
-OutputDir=E:\Projekte\remoteAssembly\exe
+OutputDir=
 UnitOutputDir=.\dcu
 PackageDLLOutputDir=.\out
 PackageDCPOutputDir=.\dcp
-SearchPath=.\;E:\Projekte\jedi\jvcl\jvcl\common;E:\Projekte\jedi\jvcl\jvcl\dcu;E:\Projekte\jedi\jvcl\jvcl\resources;E:\Projekte\jedi\jcl\jcl\lib\d7;E:\Projekte\jedi\jcl\jcl\source\common;E:\Projekte\jedi\jcl\jcl\source\include;E:\Projekte\jedi\jcl\jcl\source\include\jedi;E:\Projekte\jedi\jcl\jcl\source\vcl;E:\Projekte\jedi\jcl\jcl\source\windows;E:\Projekte\jedi\jcl\jcl\packages\d7;E:\Projekte\jedi\jcl\jcl\source;E:\Projekte\jedi\jvcl\jvcl\lib;E:\Projekte\jedi\jvcl\jvcl\lib\d7;E:\Projekte\jedi\jvcl\jvcl\packages\d7;E:\Projekte\jedi\jcl\jcl\source\windows\obj;E:\Projekte\jedi\jcl\jcl\source\windows\obj\zlib;E:\Projekte\jedi\jcl\jcl\source\windows\obj\zlib\win32;E:\Projekte\jedi\jcl\jcl\lib;E:\Projekte\jedi\jcl\jcl\packages;E:\Projekte\jedi\jcl\thirdparty\zlib;E:\Projekte\jedi\jvcl\jvcl\run;E:\Program Files (x86)\Borland\Delphi7\Source\Property Editors;E:\Program Files (x86)\Borland\Delphi7\Source\ToolsAPI
-Packages=vcl;rtl;vclx;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;ibxpress;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;IntrawebDB_50_70;Intraweb_50_70;Rave50CLX;Rave50VCL;dclOfficeXP;JvCore;JvSystem;JvStdCtrls;JvAppFrm;JvBands;JvDB;JvDlgs;JvBDE;JvControls;JvCmp;JvCrypt;JvCustom;JvDocking;JvDotNetCtrls;JvGlobus;JvHMI;JvJans;JvManagedThreads;JvMM;JvNet;JvPageComps;JvPascalInterpreter;JvPluginSystem;JvPrintPreview;JvRuntimeDesign;JvTimeFramework;JvWizards;JvXPCtrls;qrpt;CEF4Delphi_D7;kallupDesignDelphi7;madBasic_;madDisAsm_;madExcept_;Package1;vc2;kbmMemD7Run;lmdrtl;lmdrtcore;lmdrtbar;lmdrtchart;lmdrtchartdb;lmdrtdesign;lmdrtdialog;lmdrtdocking;lmdrtelcore;lmdrteldb;lmdrtelpro;lmdrtfx;lmdrtgrid;lmdrtide;lmdrtinspector;lmdrtplugin;lmdrtprint;lmdrtrtf;lmdrtrtfdb;lmdrtrtlx;lmdrtscript;lmdrtscriptimp;lmdrtsearchdb;lmdrtsearch;lmdrtshell;lmdrtstorage;lmdrtsyntax;lmdrtsys;lmdrtthemes;lmdrttools;lmdrttoolsdb;lmdrttxt;lmdrttxtdb;lmdrtweb
+SearchPath=.\;E:\Program Files (x86)\Borland\Delphi7\Source\Property Editors;E:\Program Files (x86)\Borland\Delphi7\Source\ToolsAPI
+Packages=vcl;rtl;vclx;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;vcldbx;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;qrpt;
 Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
 RunParams=
-HostApplication=G:\AMIGA-500\paule32\test1\src\windows\start.exe
+HostApplication=
 Launcher=
 UseLauncher=0
 DebugCWD=
@@ -125,13 +125,13 @@ Locale=1033
 CodePage=1252
 [Version Info Keys]
 CompanyName=kallup.net - non-profit
-FileDescription=compiler application
+FileDescription=
 FileVersion=1.0.0.1
-InternalName=wincom.dll
-LegalCopyright=(c) 2021 Jens Kallup - paule32
+InternalName=
+LegalCopyright=(c) 2023 Jens Kallup - paule32
 LegalTrademarks=
-OriginalFilename=wincom.dll
-ProductName=compiler toy
+OriginalFilename=
+ProductName=
 ProductVersion=1.0.0.1
 Comments=for education usage only
 PrivateBuild=
@@ -143,22 +143,14 @@ Item0=WIN32;CONDITIONALEXPRESSIONS;VER150;RELEASE
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=4
-Item0=.\;E:\Projekte\jedi\jvcl\jvcl\common;E:\Projekte\jedi\jvcl\jvcl\dcu;E:\Projekte\jedi\jvcl\jvcl\resources;E:\Projekte\jedi\jcl\jcl\lib\d7;E:\Projekte\jedi\jcl\jcl\source\common;E:\Projekte\jedi\jcl\jcl\source\include;E:\Projekte\jedi\jcl\jcl\source\include\jedi;E:\Projekte\jedi\jcl\jcl\source\vcl;E:\Projekte\jedi\jcl\jcl\source\windows;E:\Projekte\jedi\jcl\jcl\packages\d7;E:\Projekte\jedi\jcl\jcl\source;E:\Projekte\jedi\jvcl\jvcl\lib;E:\Projekte\jedi\jvcl\jvcl\lib\d7;E:\Projekte\jedi\jvcl\jvcl\packages\d7;E:\Projekte\jedi\jcl\jcl\source\windows\obj;E:\Projekte\jedi\jcl\jcl\source\windows\obj\zlib;E:\Projekte\jedi\jcl\jcl\source\windows\obj\zlib\win32;E:\Projekte\jedi\jcl\jcl\lib;E:\Projekte\jedi\jcl\jcl\packages;E:\Projekte\jedi\jcl\thirdparty\zlib;E:\Projekte\jedi\jvcl\jvcl\run;E:\Program Files (x86)\Borland\Delphi7\Source\Property Editors;E:\Program Files (x86)\Borland\Delphi7\Source\ToolsAPI
-Item1=.\;E:\Projekte\jedi\jvcl\jvcl\common;E:\Projekte\jedi\jvcl\jvcl\dcu;E:\Projekte\jedi\jvcl\jvcl\resources;E:\Projekte\jedi\jcl\jcl\lib\d7;E:\Projekte\jedi\jcl\jcl\source\common;E:\Projekte\jedi\jcl\jcl\source\include;E:\Projekte\jedi\jcl\jcl\source\include\jedi;E:\Projekte\jedi\jcl\jcl\source\vcl;E:\Projekte\jedi\jcl\jcl\source\windows;E:\Projekte\jedi\jcl\jcl\packages\d7;E:\Projekte\jedi\jcl\jcl\source;E:\Projekte\jedi\jvcl\jvcl\lib;E:\Projekte\jedi\jvcl\jvcl\lib\d7;E:\Projekte\jedi\jvcl\jvcl\packages\d7;E:\Projekte\jedi\jcl\jcl\source\windows\obj;E:\Projekte\jedi\jcl\jcl\source\windows\obj\zlib;E:\Projekte\jedi\jcl\jcl\source\windows\obj\zlib\win32;E:\Projekte\jedi\jcl\jcl\lib;E:\Projekte\jedi\jcl\jcl\packages;E:\Projekte\jedi\jcl\thirdparty\zlib;E:\Projekte\jedi\jvcl\jvcl\run
-Item2=..\..\source\include;..\..\experts\common;E:\Projekte\jedi\jcl\jcl\source\vcl
-Item3=.\;E:\Projekte\jedi\jvcl\jvcl\common;E:\Projekte\jedi\jvcl\jvcl\dcu;E:\Projekte\jedi\jvcl\jvcl\resources;E:\Projekte\jedi\jcl\jcl\lib\d7;E:\Projekte\jedi\jcl\jcl\source\common;E:\Projekte\jedi\jcl\jcl\source\include;E:\Projekte\jedi\jcl\jcl\source\include\jedi;E:\Projekte\jedi\jcl\jcl\source\vcl;E:\Projekte\jedi\jcl\jcl\source\windows;E:\Projekte\jedi\jcl\jcl\packages\d7;E:\Projekte\jedi\jcl\jcl\source;E:\Projekte\jedi\jvcl\jvcl\lib;E:\Projekte\jedi\jvcl\jvcl\lib\d7;E:\Projekte\jedi\jvcl\jvcl\packages\d7;E:\Projekte\jedi\jcl\jcl\source\windows\obj;E:\Projekte\jedi\jcl\jcl\source\windows\obj\zlib;E:\Projekte\jedi\jcl\jcl\source\windows\obj\zlib\win32
+Count=1
+Item0=.\;E:\Program Files (x86)\Borland\Delphi7\Source\Property Editors;E:\Program Files (x86)\Borland\Delphi7\Source\ToolsAPI
 [HistoryLists\hlUnitOutputDirectory]
-Count=3
+Count=1
 Item0=.\dcu
-Item1=E:\Projekte\BuchWerkstatt\HelpTools\dcu
-Item2=.\units
 [HistoryLists\hlBPLOutput]
-Count=2
+Count=1
 Item0=.\out
-Item1=E:\Projekte\BuchWerkstatt\HelpTools\out
 [HistoryLists\hlDCPOutput]
-Count=3
+Count=1
 Item0=.\dcp
-Item1=E:\Projekte\BuchWerkstatt\HelpTools\dcp
-Item2=E:\Projekte\BuchWerkstatt\HelpTools\dcu
