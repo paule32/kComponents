@@ -1,0 +1,10 @@
+// -------------------------------------------------------------------------
+// File: kComponents.rc
+// Desc: Tools for Help authoring.
+//
+// Code: (c) 2023 by Jens Kallup - paule32
+//       all rights reserved.
+// -------------------------------------------------------------------------
+TKDATAGRID     BITMAP ".\\assets\\images\\datagrid.bmp"
+TKDATASOURCE   BITMAP ".\\assets\\images\\datasource.bmp"
+TKENTRYFIELD   BITMAP ".\\assets\\images\\entryfield.bmp"
