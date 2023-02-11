@@ -79,7 +79,7 @@ var
   i,j: Integer;
   p: TPersistent;
 
-  ds: TkDataSource;
+  ds: TkCustomDataSource;
   st: TSQLite3Statement;
 
   frm: TFormTableSelect;
@@ -87,10 +87,10 @@ var
 begin
   for i := 0 to PropCount - 1 do
   begin
-    if GetComponent(i).ClassName = 'TkDataSource' then
+    if GetComponent(i).ClassName = 'TkCustomDataSource' then
     begin
-      ds := TkDataSource(GetComponent(i));
-      if Length(Trim(ds.EditDataBase)) < 1 then
+      ds := TkCustomDataSource(GetComponent(i));
+      if Length(Trim(ds.Base)) < 1 then
       begin
         MessageDlg(
         'Error:'   + #13#10 +
@@ -104,10 +104,10 @@ begin
   try
     try
       db := TSQLite3DataBase.Create;
-      db.Open(ds.EditDataBase);
+      db.Open(ds.Base);
 
       frm.DataBase := db;
-      frm.DataName := ds.EditDataBase;
+      frm.DataName := ds.Base;
 
       frm.PropertyEdit := self;
 
@@ -150,27 +150,18 @@ var
   s2: String;
   i: Integer;
 begin
+ShowMessage('1111');
   for i := 0 to TComponent(Designer.Root).ComponentCount - 1 do
   begin
     tc := TComponent(Designer.Root).Components[i];
     if CompareStr(tc.ClassName,'TkDataSource') = 0 then
     begin
-      s1 := Trim(TkDataSource(tc).EditDataBase);
-      s2 := Trim(TkDataSource(tc).EditDataTable);
-
+      s1 := Trim(TkDataSource(tc).Data.Base);
       if Length(s1) < 1 then
       begin
         MessageDlg(
         'Error:' + #13#10 +
         'No database file given.', mtInformation, [mbOk], 0);
-        exit;
-      end;
-
-      if Length(s2) < 1 then
-      begin
-        MessageDlg(
-        'Error:' + #13#10 +
-        'No data table available.', mtInformation, [mbOk], 0);
         exit;
       end;
     end;
@@ -181,9 +172,11 @@ begin
 
   with TTableField.Create(Application) do
   try
-    DataTable := s2;
-    s1 := 'PRAGMA table_info ("' + s2 + '")';
+    DataTable := s1;
+    s1 := TkDataSource(tc).Data.Table;
+    s1 := 'PRAGMA table_info ("' + s1 + '")';
     st := db.Prepare(s1);
+//
     while st.Step = SQLITE_ROW do
     begin
       if Trim(st.ColumnText(1)) = '' then
@@ -203,7 +196,8 @@ begin
         st.Step;
 
         tc := TComponent(GetComponent(i));
-        TkFieldItem(tc).AsString := st.ColumnText(1);
+// todo
+//        TkFieldItem(tc).AsString := st.ColumnText(1);
       end;
     end;
 
@@ -215,19 +209,19 @@ end;
 procedure Register;
 begin
   RegisterPropertyEditor(TypeInfo(string),
-  TkDataSource,'EditDataBase' ,
+  TkCustomDataSource,'Base' ,
   TEditFieldFileNameProperty);
 
   RegisterPropertyEditor(TypeInfo(string),
-  TkDataSource,'EditDataTable',
+  TkCustomDataSource,'Table',
   TEditFieldTableNameProperty);
 
   RegisterPropertyEditor(TypeInfo(string),
-  TEditField,'EditDataField' ,
+  TkCustomDataSource,'Fields' ,
   TEditFieldFieldNameProperty);
 
   RegisterPropertyEditor(TypeInfo(string),
-  TkFieldItem,'FieldName' ,
+  TkFieldListItem,'FieldName' ,
   TEditFieldFieldNameProperty);
 end;
 

@@ -57,6 +57,13 @@ object FormTableSchema: TFormTableSchema
       Height = 13
       Caption = 'Fields:'
     end
+    object Label6: TLabel
+      Left = 288
+      Top = 96
+      Width = 30
+      Height = 13
+      Caption = 'Value:'
+    end
     object ListBox1: TListBox
       Left = 8
       Top = 32
@@ -88,7 +95,7 @@ object FormTableSchema: TFormTableSchema
       Top = 152
       Width = 121
       Height = 21
-      TabOrder = 3
+      TabOrder = 4
       OnChange = Edit2Change
     end
     object ComboBox1: TComboBox
@@ -98,7 +105,7 @@ object FormTableSchema: TFormTableSchema
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
-      TabOrder = 4
+      TabOrder = 3
       OnChange = ComboBox1Change
       OnClick = ComboBox1Click
       OnKeyPress = ComboBox1KeyPress
@@ -106,6 +113,13 @@ object FormTableSchema: TFormTableSchema
         'INTEGER'
         'FLOAT'
         'TEXT')
+    end
+    object Edit3: TEdit
+      Left = 288
+      Top = 112
+      Width = 121
+      Height = 21
+      TabOrder = 5
     end
   end
   object Button1: TButton
@@ -144,13 +158,13 @@ object FormTableSchema: TFormTableSchema
     TabOrder = 4
     OnClick = Button4Click
   end
-  object Button5: TButton
+  object Button6: TButton
     Left = 432
-    Top = 96
+    Top = 97
     Width = 75
     Height = 25
-    Caption = 'Save Data'
+    Caption = 'Save'
     TabOrder = 5
-    OnClick = Button5Click
+    OnClick = Button6Click
   end
 end

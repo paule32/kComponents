@@ -10,7 +10,7 @@ unit kDataGrid;
 interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Grids, kScrollBox;
+  Dialogs, StdCtrls, Grids, kScrollBox, kDataSource;
 
 type
   TkHeaderItem = class(TCollectionItem)
@@ -44,32 +44,45 @@ type
   end;
 
 type
+  { TkCustomDataGrid }
+  TkCustomDataGrid = class(TStringGrid)
+  private
+    FGridFixedFont: TFont;
+    FGridFixedChar: WideString;
+
+    procedure StringGrid1DrawCell(
+    Sender     : TObject;
+    ACol, ARow : Integer;
+    Rect: TRect;
+    State: TGridDrawState);
+  public
+    constructor Create(AOwner: TComponent);
+    destructor Destroy;
+  end;
+
+  { TkDataGrid }
   TkDataGrid = class(TCustomControl)
   private
     FHScrollBar: TScrollBar;
     FVScrollBar: TScrollBar;
 
     FScrollBox: TkScrollBox;
-    FGrid: TStringGrid;
+    FGrid: TkCustomDataGrid;
 
-    FGridFixedFont: TFont;
-    FGridFixedChar: WideString;
+    FDataSource: TkDataSource;
 
     FHeaderItems  : TkHeaderTitle;
 
     procedure WMSize(var Message: TMessage); message WM_SIZE;
-    procedure StringGrid1DrawCell(
-    Sender     : TObject;
-    ACol, ARow : Integer;
-    Rect: TRect;
-    State: TGridDrawState);
-
+    procedure SetDataSource(ASource: TkDataSource);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
+    function getGrid: TkCustomDataGrid;
   published
     property Headers: TkHeaderTitle read FHeaderItems write FHeaderItems;
+    property DataSource: TkDataSource read FDataSource write SetDataSource;
   end;
 
 procedure Register;
@@ -161,7 +174,7 @@ begin
   FHScrollBar.Width   := FScrollBox.Width  - 24;
   FHScrollBar.Height  := 20;
 
-  FGrid := TStringGrid.Create (FScrollBox);
+  FGrid := TkCustomDataGrid.Create(FScrollBox);
   FGrid.Parent  := TWinControl(FScrollBox);
   FGrid.ScrollBars := ssNone;
   FGrid.Visible := true;
@@ -171,14 +184,6 @@ begin
   FGrid.Height := FScrollBox.Height - 24;
 
   FGrid.ColWidths[0] := 24;
-  FGrid.OnDrawCell := StringGrid1DrawCell;
-
-  FGridFixedFont := TFont.Create;
-  FGridFixedFont.Color := clBlack;
-  FGridFixedFont.Size  := 14;
-  FGridFixedFont.Name  := 'Times New Roman';
-
-  FGridFixedChar := WideChar($25ba);
 
   FHeaderItems := TkHeaderTitle.Create;
 end;
@@ -191,7 +196,7 @@ begin
   FGrid       .Destroy;
   FScrollBox  .Destroy;
 
-  inherited   Destroy;
+  inherited    Destroy;
 end;
 
 procedure TkDataGrid.WMSize(var Message: TMessage);
@@ -217,18 +222,79 @@ begin
   Paint;
 end;
 
-procedure TkDataGrid.StringGrid1DrawCell(
+function TkDataGrid.getGrid: TkCustomDataGrid;
+begin
+  result := FGrid;
+end;
+
+procedure TkDataGrid.SetDataSource(ASource: TkDataSource);
+begin
+  FDataSource := ASource;
+  FDataSource.Data.Active := ASource.Data.Active;
+end;
+
+{ TkCustomDataGrid }
+constructor TkCustomDataGrid.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+
+  FGridFixedFont := TFont.Create;
+  FGridFixedFont.Color := clBlack;
+  FGridFixedFont.Size  := 14;
+  FGridFixedFont.Name  := 'Times New Roman';
+
+  FGridFixedChar := WideChar($25ba);
+
+  Color := clGray;
+  OnDrawCell := StringGrid1DrawCell;
+end;
+
+destructor TkCustomDataGrid.Destroy;
+begin
+  FGridFixedFont.Destroy;
+  inherited Destroy;
+end;
+
+procedure TkCustomDataGrid.StringGrid1DrawCell(
   Sender     : TObject;
   ACol, ARow : Integer;
   Rect: TRect;
   State: TGridDrawState);
+  var
+  dg: TkDataGrid;
+  ds: TkDataSource;
+  tr: TRect;
 begin
+  dg := TkDataGrid(Parent.Parent);
+  ds := dg.DataSource;
+  if (Assigned(ds) or (ds <> nil)) then
+  begin
+    if not ds.Data.Active then
+    begin
+      ColCount := 2;
+      RowCount := 2;
+    end else
+    begin
+      ColCount := 5;
+    end;
+  end else
+  begin
+    ColCount := 2;
+    RowCount := 2;
+  end;
+
+  if (ACol > 0) and (ARow > 0) then
+  begin
+    Canvas.Brush.Color := clWhite;
+    Canvas.FillRect(Rect);
+  end;
+
   if (ACol = 0) and (ARow = 1) then
   begin
     rect.Top  := rect.Top+3;
     rect.Left := 4;
-    FGrid.Canvas.Font.Assign(FGridFixedFont);
-    DrawTextW(FGrid.Canvas.Handle,PWideChar(FGridFixedChar),
+    Canvas.Font.Assign(FGridFixedFont);
+    DrawTextW(Canvas.Handle,PWideChar(FGridFixedChar),
     -1, Rect, DT_NOPREFIX or DT_VCENTER or DT_SINGLELINE);
   end;
 end;

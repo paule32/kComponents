@@ -17,7 +17,7 @@ type
   TEditFieldOptionType = (efNormal,efData);
   TEditFieldOptions = set of TEditFieldOptionSet;
 
-  TEditField = class(TEdit)
+  TkEditField = class(TEdit)
   private
     FisChanged : Boolean;
     FOptions   : TEditFieldOptions;
@@ -50,21 +50,21 @@ procedure Register;
 implementation
 
 { TEditField }
-constructor TEditField.Create(AOwner: TComponent);
+constructor TkEditField.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FisChanged := false;
 end;
-destructor TEditField.Destroy;
+destructor TkEditField.Destroy;
 begin
   inherited Destroy;
 end;
 
-procedure TEditField.SetPitchColor;
+procedure TkEditField.SetPitchColor;
 begin
 end;
 
-procedure TEditField.DoEnter;
+procedure TkEditField.DoEnter;
 begin
   if FisChanged then
   begin
@@ -77,20 +77,20 @@ begin
   end;
 end;
 
-procedure TEditField.DoExit;
+procedure TkEditField.DoExit;
 begin
   Color := clWhite;
   Font.Color := clBlack;
 end;
 
-procedure TEditField.CMDialogKey(var Msg: TWMKey);
+procedure TkEditField.CMDialogKey(var Msg: TWMKey);
 begin
   FisChanged := true;
   Msg.Result := 0;
   inherited;
 end;
 
-procedure TEditField.KeyPress(var key: Char);
+procedure TkEditField.KeyPress(var key: Char);
 begin
   FisChanged := true;
   Color := clRed;
@@ -99,7 +99,7 @@ end;
 
 procedure Register;
 begin
-  RegisterComponents('KALLUP', [TEditField]);
+  RegisterComponents('KALLUP', [TkEditField]);
 end;
 
 end.

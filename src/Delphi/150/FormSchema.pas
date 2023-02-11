@@ -33,7 +33,9 @@ type
     ComboBox1: TComboBox;
     Label4: TLabel;
     Label5: TLabel;
-    Button5: TButton;
+    Label6: TLabel;
+    Edit3: TEdit;
+    Button6: TButton;
     procedure Button1Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -48,9 +50,11 @@ type
     procedure ComboBox1Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
+    procedure Button6Click(Sender: TObject);
   private
     OldItemIndex1: Integer;
     OldItemIndex2: Integer;
+    DataList : TStringList;
   public
     DataBase: TSQLite3DataBase;
     DataName: String;
@@ -116,6 +120,9 @@ end;
 
 procedure TFormTableSchema.FormDestroy(Sender: TObject);
 begin
+  DataList.Clear;
+  DataList.Free;
+
   ComboBox1.Clear;
   ComboBox1.Free;
 
@@ -227,7 +234,11 @@ procedure TFormTableSchema.ListBox1Click(Sender: TObject);
 var
   sql,s1,s2,s3: String;
   st : TSQLite3Statement;
+  rec: Integer;
+  i  : Integer;
 begin
+  DataList.Clear;
+
   ListBox2.Items.Clear;
   sql := 'PRAGMA table_info ("' + ListBox1.Items[ListBox1.ItemIndex] + '")';
   st  := DataBase.Prepare(sql);
@@ -241,8 +252,45 @@ begin
     if s2 = 'TEXT'    then s3 := '2 - ' + s1 ;
 
     ListBox2.Items.Add(s3);
+    DataList.Add(st.ColumnText(1));
   end;
+
+  rec := 0;
+  sql := 'SELECT ';
+  for i := 0 to DataList.Count - 1 do
+  begin
+    if i = DataList.Count - 1 then
+    sql := sql + DataList.Strings[i] + ' ' else
+    sql := sql + DataList.Strings[i] + ', ';
+  end;
+
+  sql := sql + 'FROM ' + ListBox1.Items[ListBox1.ItemIndex];
+  st  := DataBase.Prepare(sql);
+  while st.Step = SQLITE_ROW do
+  begin
+    for i := 0 to DataList.Count-1 do
+    begin
+      DataList.Strings[i] :=
+      DataList.Strings[i] + '@' + st.ColumnText(i);
+    end;
+    inc(rec);
+    break;
+  end;
+
+  //DataList.Add(st.ColumnText(3));
+  //ShowMessage('list:'+#13#10+DataList.Text);
+
   Edit2.Text := ListBox1.Items[ListBox1.ItemIndex];
+  sql := 'SELECT "' + s1 + '" FROM ' + Edit2.Text;
+//  showmessage(sql);
+
+  st  := DataBase.Prepare(sql);
+  st.Step;
+
+  if s2 = 'TEXT' then
+  Edit3.Text := st.ColumnText(1);
+
+//  showmessage('==> ' + st.columntext(1));
 end;
 
 procedure TFormTableSchema.FormShow(Sender: TObject);
@@ -250,6 +298,9 @@ var
   s1,s2,s3,sql: String;
   st : TSQLite3Statement;
 begin
+  DataList := TStringList.Create;
+  DataList.Clear;
+
   sql := 'SELECT * FROM sqlite_master WHERE type = "table"';
   DataBase.Open(DataName);
   st := DataBase.Prepare(sql);
@@ -289,6 +340,8 @@ procedure TFormTableSchema.ListBox2Click(Sender: TObject);
 var
   s1,s2: String;
   i1,i2: Integer;
+  st : TSQLite3Statement;
+  rec: Integer;
 begin
   if ListBox2.ItemIndex > -1 then
   begin
@@ -300,10 +353,28 @@ begin
 
     i1 := StrToInt(Trim(Copy(ListBox2.Items[ListBox2.ItemIndex],1,1)));
     i2 := ComboBox1.ItemIndex;
-    if i1 = i2 then
-    exit;
+//    if i1 = i2 then
+//    exit;
     ComboBox1.ItemIndex := i1;
 
+    s2 := Trim(Copy(ListBox2.Items[ListBox2.ItemIndex],5,MAX_FIELD_LENGTH));
+    s1 := ListBox1.Items[ListBox1.ItemIndex];
+    s1 := 'SELECT ' + s2 + ' FROM ''' + s1 + '''';
+
+//    showmessage('SEL: ' + s1);
+
+    DataBase.Open(DataName);
+    rec := 0;
+    st  := DataBase.Prepare(s1);
+    while st.Step = SQLITE_ROW do
+    begin
+      inc(rec);
+      break;
+    end;
+    if rec > 0 then
+    begin
+      Edit3.Text := st.ColumnText(0);
+    end;
   end;
 end;
 
@@ -334,20 +405,23 @@ procedure TFormTableSchema.Button5Click(Sender: TObject);
 var
   sql: String;
   tn : String;
+  rec: Integer;
   st : TSQLite3Statement;
   i  : Integer;
   s  : String;
   s1 : String;
   s2 : String;
 begin
-  DataBase.Close;
-  DataBase.Open(DataName);
-  
+//  DataBase.Close;
+//  DataBase.Open(DataName);
+
+(*
   tn  := ListBox1.Items[ListBox1.ItemIndex];
   sql := 'DROP TABLE IF EXISTS ' + tn;
   st  := DataBase.Prepare(sql);
   st.Step;
-
+*)
+(*
   sql := 'CREATE TABLE IF NOT EXISTS '    +
   LowerCase(ListBox1.Items[ListBox1.ItemIndex]) + ' (' + #13#10;
 
@@ -367,6 +441,34 @@ begin
   ShowMessage(sql);
   st := DataBase.Prepare(sql);
   st.Step;
+
+  sql := 'SELECT ' +
+  Edit1.Text   + ' FROM ' +
+  ListBox1.Items[ListBox1.ItemIndex];
+  st  := DataBase.Prepare(sql);
+  rec := 0;
+  while st.Step = SQLITE_ROW do
+  begin
+    inc(rec);
+    break;
+  end;
+
+  if rec > 0 then
+  begin
+    sql := 'UPDATE ' +
+    ListBox1.Items[ListBox1.ItemIndex] + #13#10 +
+    'SET ' + Edit1.Text +  ' = ''' + Edit3.Text + ''' ';
+  end else
+  begin
+    sql := 'INSERT INTO ' +
+    ListBox1.Items[ListBox1.ItemIndex] + ' (' + Copy(
+    ListBox2.Items[ListBox2.ItemIndex],5,MAX_FIELD_LENGTH) +
+    ') VALUES (''' + Edit3.Text + ''')';
+  end;
+
+  ShowMessage(sql);
+  st := DataBase.Prepare(sql);
+  st.Step;*)
 end;
 
 procedure TFormTableSchema.Edit1KeyPress(Sender: TObject; var Key: Char);
@@ -387,6 +489,66 @@ begin
   end;
 end;
 
-end.
+procedure TFormTableSchema.Button6Click(Sender: TObject);
+var
+  sql: String;
+  rec: Integer;
+  st : TSQLite3Statement;
+begin
+  sql := 'SELECT ' + Edit1.Text + ' FROM ' +
+  ListBox1.Items[ListBox1.ItemIndex];
+  rec := 0;
+  st  := DataBase.Prepare(sql);
+  while st.Step = SQLITE_ROW do
+  begin
+    inc(rec);
+  end;
 
+  if rec > 0 then
+  begin
+    sql := 'UPDATE "' +
+    ListBox1.Items[ListBox1.ItemIndex]  + '"'  + #13#10 + 'SET ''' +
+    Edit1.Text + ''' = ''' + Edit3.Text + '''' + #13#10 + 'WHERE ' +
+    Edit1.Text +   ' = (SELECT ' +
+    Edit1.Text +   ' FROM "' +
+    ListBox1.Items[ListBox1.ItemIndex] + '" ORDER BY '  +
+    Edit1.Text +   ' LIMIT 1)';
+
+    st := DataBase.Prepare(sql);
+    st.Step;
+
+    sql := 'SELECT * FROM ' +
+    ListBox1.Items[ListBox1.ItemIndex];
+
+    rec := 0;
+    st  := DataBase.Prepare(sql);
+    st.Step;
+
+    Edit3.Text := st.ColumnText(0);
+    ListBox2.ItemIndex := 0;
+  end else
+  begin
+    sql := 'INSERT INTO ''' +
+    ListBox1.Items[ListBox1.ItemIndex] + ''' (' + Copy(
+    ListBox2.Items[ListBox2.ItemIndex],5,MAX_FIELD_LENGTH) +
+    ') VALUES (''' + Edit3.Text + ''')';
+
+    st := DataBase.Prepare(sql);
+    st.Step;
+
+    Edit3.Text := '';
+
+    sql := 'seLECT ' +
+    Edit1.Text   + ' FROM ' +
+    ListBox1.Items[ListBox1.ItemIndex];
+
+    st := DataBase.Prepare(sql);
+    st.Step;
+
+    Edit3.Text := st.ColumnText(1);
+    ListBox2.ItemIndex := 0;
+  end;
+end;
+
+end.
 

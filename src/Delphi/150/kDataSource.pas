@@ -16,12 +16,41 @@ uses
 type TkErrorEvent = procedure (Sender: TObject; ErrorCode: Integer) of object;
 
 type
-  TkDataSource = class(TComponent)
+  TkFieldListItem = class(TCollectionItem)
+  private
+    FFieldName : String;
+    FFieldType : String;
+    FStr       : String;
+    FValue     : Integer;
+  public
+    constructor Create(Collection: TCollection); override;
+  published
+    property FieldName: String  read FFieldName write FFieldName;
+    property FieldType: String  read FFieldType write FFieldType;
+
+    property AsString : String  read FStr       write FStr;
+    property AsInteger: Integer read FValue     write FValue;
+  end;
+
+type
+  TkFieldList = class(TCollection)
+  private
+    function  getItems(I: Integer): TkFieldListItem;
+    procedure setItems(I: Integer; Value: TkFieldListItem);
+  public
+    constructor Create;
+    function Add: TkFieldListItem;
+    property Items[i: integer]: TkFieldListItem read GetItems write SetItems;
+  end;
+
+type
+  TkCustomDataSource = class(TPersistent)
   private
     FDataBase  : String;
     FDataTable : String;
     FActive    : Boolean;
-
+    FParent    : TObject;
+    FFieldItems: TkFieldList;
     FDataBaseObject: TSQLite3DataBase;
 
     // event handler ...
@@ -38,20 +67,19 @@ type
     FonBeforeScroll: TNotifyEvent;
 
     FonError: TkErrorEvent;
-
   private
-    FFieldItems: TkFieldList;
-  protected
+    procedure SetActive(AValue: Boolean);
   public
-    procedure OpenDataBase;
-    constructor Create(AOwner: TComponent); override;
+    constructor Create;
     destructor Destroy; override;
-  // properties:
-  published
-    property EditDataActive : Boolean read FActive    write FActive default false;
-    property EditDataBase   : String  read FDataBase  write FDataBase;
-    property EditDataTable  : String  read FDataTable write FDataTable;
+    procedure Open;
+    procedure Close;
 
+//    property Fields[I: Integer]: TkFieldListItem read GetItems write SetItems;
+  published
+    property Active: Boolean read FActive    write SetActive default false;
+    property Base  : String  read FDataBase  write FDataBase;
+    property Table : String  read FDataTable write FDataTable;
     property Fields: TkFieldList read FFieldItems write FFieldItems;
   // event handler's:
   published
@@ -70,31 +98,82 @@ type
     property OnError: TkErrorEvent read FonError write FonError;
   end;
 
+  TkDataSource = class(TComponent)
+  private
+    FData: TkCustomDataSource;
+    procedure SetDataSource(AData: TkCustomDataSource);
+  protected
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  // properties:
+  published
+    property Data: TkCustomDataSource read FData write SetDataSource;
+  end;
+
 procedure Register;
 
 implementation
+uses
+  kDataGrid;
+
+constructor TkFieldList.Create;
+begin
+  inherited Create(TkFieldListItem);
+end;
+
+function TkFieldList.Add: TkFieldListItem;
+begin
+  result := TkFieldListItem(inherited Add);
+end;
 
 { TkDataSource }
 constructor TkDataSource.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FFieldItems := TkFieldList.Create;
+
+  FData := TkCustomDataSource.Create;
+  FData.FParent := AOwner;
 end;
 destructor TkDataSource.Destroy;
 begin
-  FFieldItems.Clear;
-  FFieldItems.Free;
-
-  if Assigned(FDataBaseObject) then
+  if Assigned(Data.FDataBaseObject) then
   begin
-    FDataBaseObject.Close;
-    FDataBaseObject.Free;
+    Data.FDataBaseObject.Close;
+    Data.FDataBaseObject.Free;
   end;
 
   inherited Destroy;
 end;
 
-procedure TkDataSource.OpenDataBase;
+procedure TkDataSource.SetDataSource(AData: TkCustomDataSource);
+begin
+  FData.Assign(AData);
+end;
+
+constructor TkCustomDataSource.Create;
+begin
+  inherited Create;
+  FFieldItems := TkFieldList.Create;
+end;
+destructor TkCustomDataSource.Destroy;
+begin
+  FFieldItems.Clear;
+  FFieldItems.Free;
+  inherited Destroy;
+end;
+
+function TkFieldList.GetItems(i: integer): TkFieldListItem;
+begin
+  Result := TkFieldListItem(inherited Items[I]);
+end;
+
+procedure TkFieldList.SetItems(i: integer; Value: TkFieldListItem);
+begin
+  Items[I].Assign(Value);
+end;
+
+procedure TkCustomDataSource.Open;
 begin
   if Assigned(FonBeforeOpen) then
   begin
@@ -102,7 +181,7 @@ begin
     onBeforeOpen(self);
   end;
 
-  if Length(Trim(EditDataBase)) < 1 then
+  if Length(Trim(Base)) < 1 then
   begin
     MessageDlg(
     'Error:'   + #13#10 +
@@ -110,15 +189,68 @@ begin
     exit;
   end;
 
-  FActive := false;
+  SetActive(false);
+
   FDataBaseObject.Close;
-  FDataBaseObject.Open(EditDataBase);
+  FDataBaseObject.Open(Base);
 
   if Assigned(FonAfterOpen) then
   begin
     ShowMessage('after open');
     onAfterOpen(self);
   end;
+end;
+
+procedure TkCustomDataSource.Close;
+begin
+  if FDataBaseObject <> nil then
+  FDataBaseObject.Close;
+end;
+
+procedure TkCustomDataSource.SetActive(AValue: Boolean);
+var
+  ClassRef: TClass;
+  tc: TComponent;
+  i: Integer;
+begin
+  FActive := AValue;
+
+  if AValue = true then
+  begin
+    for i := (FParent as TForm).ComponentCount - 1 downto 0 do
+    begin
+      tc := (FParent as TForm).Components[i];
+      if tc.ClassName = 'TkDataGrid' then
+      begin
+        with (tc as TkDataGrid) do
+        begin
+          getGrid.ColCount := 5;
+          getGrid.RowCount := 5;
+        end;
+      end;
+    end;
+  end else
+  begin
+    for i := (FParent as TForm).ComponentCount - 1 downto 0 do
+    begin
+      tc := (FParent as TForm).Components[i];
+      if tc.ClassName = 'TkDataGrid' then
+      begin
+        with (tc as TkDataGrid) do
+        begin
+          getGrid.ColCount := 2;
+          getGrid.RowCount := 2;
+        end;
+      end;
+    end;
+  end;
+end;
+
+constructor TkFieldListItem.Create(Collection: TCollection);
+begin
+  if Assigned(Collection) and (Collection is TkFieldList) then
+  inherited Create(Collection);
+  FFieldType := 'TEXT';
 end;
 
 procedure Register;

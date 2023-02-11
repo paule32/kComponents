@@ -8,8 +8,6 @@ uses
 
 type
   TForm2 = class(TForm)
-    kDataGrid1: TkDataGrid;
-    kDataSource1: TkDataSource;
   private
     { Private declarations }
   public
