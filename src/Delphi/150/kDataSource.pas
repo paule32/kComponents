@@ -50,7 +50,6 @@ type
     FDataTable : String;
     FActive    : Boolean;
     FParent    : TObject;
-    FFieldItems: TkFieldList;
     FDataBaseObject: TSQLite3DataBase;
 
     // event handler ...
@@ -80,7 +79,6 @@ type
     property Active: Boolean read FActive    write SetActive default false;
     property Base  : String  read FDataBase  write FDataBase;
     property Table : String  read FDataTable write FDataTable;
-    property Fields: TkFieldList read FFieldItems write FFieldItems;
   // event handler's:
   published
     property OnAfterAppend : TNotifyEvent read FonAfterAppend  write FonAfterAppend;
@@ -100,6 +98,7 @@ type
 
   TkDataSource = class(TComponent)
   private
+    FFieldItems: TkFieldList;
     FData: TkCustomDataSource;
     procedure SetDataSource(AData: TkCustomDataSource);
   protected
@@ -109,6 +108,7 @@ type
   // properties:
   published
     property Data: TkCustomDataSource read FData write SetDataSource;
+    property Fields: TkFieldList read FFieldItems write FFieldItems;
   end;
 
 procedure Register;
@@ -132,6 +132,7 @@ constructor TkDataSource.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
+  FFieldItems := TkFieldList.Create;
   FData := TkCustomDataSource.Create;
   FData.FParent := AOwner;
 end;
@@ -142,6 +143,9 @@ begin
     Data.FDataBaseObject.Close;
     Data.FDataBaseObject.Free;
   end;
+
+  FFieldItems.Clear;
+  FFieldItems.Free;
 
   inherited Destroy;
 end;
@@ -154,12 +158,9 @@ end;
 constructor TkCustomDataSource.Create;
 begin
   inherited Create;
-  FFieldItems := TkFieldList.Create;
 end;
 destructor TkCustomDataSource.Destroy;
 begin
-  FFieldItems.Clear;
-  FFieldItems.Free;
   inherited Destroy;
 end;
 
